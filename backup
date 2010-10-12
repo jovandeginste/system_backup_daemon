@@ -1,0 +1,107 @@
+#!/usr/bin/ruby
+
+raise 'Must run as root' if Process.euid != 0
+
+raise 'First fork failed' if (pid = fork) == -1
+exit unless pid.nil?
+
+Process.setsid
+raise 'Second fork failed' if (pid = fork) == -1
+exit unless pid.nil?
+puts "Daemon pid: #{Process.pid}" # Or save it somewhere, etc.
+
+STDIN.reopen '/dev/null'
+STDOUT.reopen '/dev/null', 'a'
+STDERR.reopen STDOUT
+
+$:.unshift(File.join(ENV['HOME'], 'ruby'))
+require "fileutils.rb"
+require "net/smtp.rb"
+["machine.rb" , "cycle.rb" , "fileset.rb" , "float.rb" , "fixnum.rb" , "object.rb" , "daemon.rb" , "telnet_server.rb"].each {|file|
+	load File.join(File.dirname(__FILE__), file)
+}
+
+@@system = {:max_backup_threads => 2, :log_file => "/data/Backups/meta/daemon.log", :mail_from => "Your backup service <backups@localhost>", :time_between_cycles => 5.minutes, :meta_directory => "/data/Backups/meta", :machine_defaults => {:base_directory => "/data/Backups", :current_subdir => "current", :staging_subdir => ".staging", :cycle => :Daily, :prune_after => 10.days}}
+
+@@machines = {
+	:spid3r_linux => {:mode => :local, :connect => "localhost", :fileset => :linux, :cycle => :Daily, :contact => "jo.vandeginste@gmail.com"},
+	:dwarfy => {:mode => :linux, :connect => "dwarfy.be", :fileset => :linux, :cycle => :Daily, :contact => "jo.vandeginste@gmail.com"},
+	:spinnetje => {:mode => :windows, :connect => "spinnetje", :fileset => :spinnetje, :cycle => :Daily, :contact => "jo.vandeginste@gmail.com"},
+	:jo_laptop => {:mode => :windows,
+		:connect =>
+		{
+			"jo-laptop" => {},
+			"jo-laptop-wifi" => {:cycle => :TripleDaily},
+			#"jo-laptop.vpn" => {:cycle => :Weekly}
+		}, :fileset => :jo_laptop, :cycle => :Daily, :contact => "jo.vandeginste@gmail.com"},
+	:leen_laptop => {:mode => :windows,
+		:connect =>
+		{
+			"leen-laptop" => {},
+			"leen-laptop-wifi" => {:cycle => :TripleDaily},
+			#"leen-laptop.vpn" => {:cycle => :Weekly}
+		}, :fileset => :leen_laptop, :cycle => :Daily, :contact => "leen.vandeginste@gmail.com"},
+}
+
+@@filesets = {
+	:linux => {:includes => ["/"], :excludes => ["/proc", "/dev", "/sys", "/tmp", "/home/*/.gvfs", "/var/lib/mysql", "/swap.swp", "/usr/doc", "/usr/local/mysql", "/data"]},
+	:spinnetje => {:includes => ["root/d/My Documents", "root/d/eclipse-workspace", "root/d/Users", "root/f"], :excludes => ["d/Users/jo/AppData/Local/Temp"]},
+	:jo_laptop => {:includes => ["root/c/Users"], :excludes => ["c/Users/u0044579/Documents/Virtual Machines", "c/Users/u0044579/.VirtualBox"]},
+	:leen_laptop => {:includes => ["root/c/Users", "root/d/Leen"], :excludes => ["c/Users/leen/AppData/Local/Temp"]},
+}
+
+@@cycles = {
+	:HalfDaily => {:max_age => 2, :min_age => 0.48, :check => 30},
+	:Daily => {:max_age => 3, :min_age => 0.97, :check => 30},
+	:TripleDaily => {:max_age => 7, :min_age => 2.97, :check => 30},
+	:Weekly => {:max_age => 10, :min_age => 6.97, :check => 30}
+}
+
+def parse_config
+	@@daemon = Daemon.new("daemon", @@system)
+
+	@@filesets.each{|k, v|
+		Fileset.new(k, v)
+	}
+	@@cycles.each{|k, v|
+		Cycle.new(k, v)
+	}
+	@@machines.each{|k, v|
+		Machine.new(k, @@daemon.machine_defaults.merge(v))
+	}
+end
+
+
+def reload
+	Machine.all.each {|o|
+		Machine.destroy(o)
+	}
+	Cycle.all.each {|o|
+		Cycle.destroy(o)
+	}
+	Fileset.all.each {|o|
+		Fileset.destroy(o)
+	}
+	Daemon.all.each {|o|
+		Daemon.destroy(o)
+	}
+	parse_config
+	nil
+end
+
+reload
+
+Machine.all.each{|machine|
+	@@daemon.log machine.show_config
+}
+
+@@cycle_thread ||= Thread.new {
+	while true
+		@@daemon.cycle
+	end
+}
+
+@@server_thread ||= TelnetServer.new(2021)
+@@server_thread.start if @@server_thread.stopped?
+
+@@cycle_thread.join
