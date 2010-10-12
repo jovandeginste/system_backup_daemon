@@ -245,6 +245,8 @@ result
 			FileUtils.mkdir self.backup_current_directory
 		end
 
+		FileUtils.touch self.backup_current_directory
+
 		fromdir = case self.mode.to_sym
 			  when :local
 				  "\"#{self.includes.join('" "')}\""
