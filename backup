@@ -21,7 +21,7 @@ require "net/smtp.rb"
 	load File.join(File.dirname(__FILE__), file)
 }
 
-@@system = {:max_backup_threads => 2, :log_file => "/data/Backups/meta/daemon.log", :mail_from => "Your backup service <backups@localhost>", :time_between_cycles => 5.minutes, :meta_directory => "/data/Backups/meta", :machine_defaults => {:base_directory => "/data/Backups", :current_subdir => "current", :staging_subdir => ".staging", :cycle => :Daily, :prune_after => 10.days}}
+@@system = {:max_backup_threads => 2, :log_file => "/data/Backups/meta/daemon.log", :mail_from => "Your backup service <backups@localhost>", :time_between_cycles => 5.minutes, :meta_directory => "/data/Backups/meta", :machine_defaults => {:base_directory => "/data/Backups", :current_subdir => "current", :staging_subdir => ".staging", :cycle => :Daily, :prune_after => 20.days}}
 
 @@machines = {
 	:spid3r_linux => {:mode => :local, :connect => "localhost", :fileset => :linux, :cycle => :Daily, :contact => "jo.vandeginste@gmail.com"},
