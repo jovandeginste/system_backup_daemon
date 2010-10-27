@@ -451,4 +451,16 @@ end
 		self.touch_mail_file
 		return true
 	end
+
+	def send_email(from, to, subject, message)
+		msg = "From: #{from}\nTo: #{to}\nSubject: #{subject}\n\n#{message}"
+
+		begin
+			Net::SMTP.start('localhost') do |smtp|
+				smtp.send_message msg, from, to
+			end
+		rescue
+			self.log "Cannot send mail ... something went wrong!"
+		end
+	end
 end

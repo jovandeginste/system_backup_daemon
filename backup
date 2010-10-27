@@ -1,18 +1,18 @@
 #!/usr/bin/ruby
 
-raise 'Must run as root' if Process.euid != 0
-
-raise 'First fork failed' if (pid = fork) == -1
-exit unless pid.nil?
-
-Process.setsid
-raise 'Second fork failed' if (pid = fork) == -1
-exit unless pid.nil?
-puts "Daemon pid: #{Process.pid}" # Or save it somewhere, etc.
-
-STDIN.reopen '/dev/null'
-STDOUT.reopen '/dev/null', 'a'
-STDERR.reopen STDOUT
+## raise 'Must run as root' if Process.euid != 0
+## 
+## raise 'First fork failed' if (pid = fork) == -1
+## exit unless pid.nil?
+## 
+## Process.setsid
+## raise 'Second fork failed' if (pid = fork) == -1
+## exit unless pid.nil?
+## puts "Daemon pid: #{Process.pid}" # Or save it somewhere, etc.
+## 
+## STDIN.reopen '/dev/null'
+## STDOUT.reopen '/dev/null', 'a'
+## STDERR.reopen STDOUT
 
 $:.unshift(File.join(ENV['HOME'], 'ruby'))
 require "fileutils.rb"
