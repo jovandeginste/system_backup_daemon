@@ -244,6 +244,7 @@ result
 		unless File.directory?(self.backup_current_directory)
 			FileUtils.mkdir self.backup_current_directory
 		end
+		FileUtils.touch self.backup_current_directory
 
 		fromdir = case self.mode.to_sym
 			  when :local
