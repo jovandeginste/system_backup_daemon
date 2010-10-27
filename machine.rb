@@ -454,6 +454,9 @@ end
 
 	def send_email(from, to, subject, message)
 		msg = "From: #{from}\nTo: #{to}\nSubject: #{subject}\n\n#{message}"
+		self.log "Sending mail:"
+		self.log msg
+		self.log "<end of mail>"
 
 		begin
 			Net::SMTP.start('localhost') do |smtp|
