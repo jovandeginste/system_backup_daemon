@@ -40,7 +40,7 @@ require "net/smtp.rb"
 			"leen-laptop" => {},
 			"leen-laptop-wifi" => {:cycle => :TripleDaily},
 			#"leen-laptop.vpn" => {:cycle => :Weekly}
-		}, :fileset => :leen_laptop, :cycle => :Daily, :contact => "leen.vandeginste@gmail.com"},
+		}, :fileset => :leen_laptop, :cycle => :Daily, :contact => "jo.vandeginste@gmail.com"},
 }
 
 @@filesets = {
