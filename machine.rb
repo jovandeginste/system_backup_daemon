@@ -427,7 +427,7 @@ result
 	end
 
 	def send_mail
-		return false if self.last_mail.nil? or self.last_mail < Time.now + 1.day
+		return false unless self.last_mail.nil? or self.last_mail < Time.now - 1.day
 		@@daemon.log "Backup for #{self} expired."
 		self.contacts.each{|contact|
 			msg = <<EOF_MESSAGE
