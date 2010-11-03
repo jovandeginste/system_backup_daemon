@@ -1,0 +1,105 @@
+--- 
+:machines: 
+  :leen_laptop: 
+    :contact: jo.vandeginste@gmail.com
+    :cycle: :Daily
+    :connect: 
+      leen-laptop-wifi: 
+        :cycle: :TripleDaily
+      leen-laptop: {}
+
+    :fileset: :leen_laptop
+    :mode: :windows
+  :dwarfy: 
+    :contact: jo.vandeginste@gmail.com
+    :cycle: :Daily
+    :connect: dwarfy.be
+    :fileset: :linux
+    :mode: :linux
+  :spid3r_linux: 
+    :contact: jo.vandeginste@gmail.com
+    :cycle: :Daily
+    :connect: localhost
+    :fileset: :linux
+    :mode: :local
+  :spinnetje: 
+    :contact: jo.vandeginste@gmail.com
+    :cycle: :Daily
+    :connect: spinnetje
+    :fileset: :spinnetje
+    :mode: :windows
+  :jo_laptop: 
+    :contact: jo.vandeginste@gmail.com
+    :cycle: :Daily
+    :connect: 
+      jo-laptop-wifi: 
+        :cycle: :TripleDaily
+      jo-laptop: {}
+
+    :fileset: :jo_laptop
+    :mode: :windows
+:filesets: 
+  :linux: 
+    :includes: 
+    - /
+    :excludes: 
+    - /proc
+    - /dev
+    - /sys
+    - /tmp
+    - /home/*/.gvfs
+    - /var/lib/mysql
+    - /swap.swp
+    - /usr/doc
+    - /usr/local/mysql
+    - /data
+  :leen_laptop: 
+    :includes: 
+    - root/c/Users
+    - root/d/Leen
+    :excludes: 
+    - c/Users/leen/AppData/Local/Temp
+  :spinnetje: 
+    :includes: 
+    - root/d/My Documents
+    - root/d/eclipse-workspace
+    - root/d/Users
+    - root/f
+    :excludes: 
+    - d/Users/jo/AppData/Local/Temp
+  :jo_laptop: 
+    :includes: 
+    - root/c/Users
+    :excludes: 
+    - c/Users/u0044579/Documents/Virtual Machines
+    - c/Users/u0044579/.VirtualBox
+    - c/Users/u0044579/AppData/Roaming/cygwin/tmp
+:cycles: 
+  :Weekly: 
+    :max_age: 10
+    :min_age: 6.97
+    :check: 30
+  :TripleDaily: 
+    :max_age: 7
+    :min_age: 2.97
+    :check: 30
+  :HalfDaily: 
+    :max_age: 2
+    :min_age: 0.48
+    :check: 30
+  :Daily: 
+    :max_age: 3
+    :min_age: 0.97
+    :check: 30
+:system: 
+  :machine_defaults: 
+    :base_directory: /data/Backups
+    :cycle: :Daily
+    :current_subdir: current
+    :staging_subdir: .staging
+    :prune_after: 1728000
+  :log_file: /data/Backups/meta/daemon.log
+  :mail_from: Your backup service <backups@localhost>
+  :time_between_cycles: 300
+  :meta_directory: /data/Backups/meta
+  :max_backup_threads: 2
