@@ -265,6 +265,7 @@ result
 			end
 		end
 		exit_code = status.exitstatus
+		FileUtils.touch self.backup_current_directory
 		self.lock
 
 		t2 = Time.now
