@@ -1,20 +1,20 @@
 #!/usr/bin/ruby
 
-raise 'Must run as root' if Process.euid != 0
-
-raise 'First fork failed' if (pid = fork) == -1
-exit unless pid.nil?
-
-Process.setsid
-raise 'Second fork failed' if (pid = fork) == -1
-exit unless pid.nil?
-puts "Daemon pid: #{Process.pid}" # Or save it somewhere, etc.
-
-STDIN.reopen '/dev/null'
-STDOUT.reopen '/dev/null', 'a'
-STDERR.reopen STDOUT
-
-$:.unshift(File.join(ENV['HOME'], 'ruby'))
+## raise 'Must run as root' if Process.euid != 0
+## 
+## raise 'First fork failed' if (pid = fork) == -1
+## exit unless pid.nil?
+## 
+## Process.setsid
+## raise 'Second fork failed' if (pid = fork) == -1
+## exit unless pid.nil?
+## puts "Daemon pid: #{Process.pid}" # Or save it somewhere, etc.
+## 
+## STDIN.reopen '/dev/null'
+## STDOUT.reopen '/dev/null', 'a'
+## STDERR.reopen STDOUT
+## 
+## $:.unshift(File.join(ENV['HOME'], 'ruby'))
 require "fileutils.rb"
 require "net/smtp.rb"
 require "yaml"
@@ -23,13 +23,10 @@ require "yaml"
 	load File.join(File.dirname(__FILE__), file)
 }
 
-@@config = YAML.load_file('/etc/backup.conf')
-@@system = @@config[:system]
-@@machines = @@config[:machines]
-@@filesets = @@config[:filesets]
-@@cycles = @@config[:cycles]
+load "/etc/backup.conf"
 
 puts @@cycles.to_yaml
+
 exit
 
 def parse_config
