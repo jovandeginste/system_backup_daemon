@@ -37,6 +37,7 @@ class Machine
 		self.connect ||= "localhost".arrayfy
 		self.meta_directory ||= @@daemon.meta_directory
 		self.log_file ||= File.join(self.meta_directory, "#{self}.log")
+		self.log self.show_config
 	end
 
 	def parse_params(params)
