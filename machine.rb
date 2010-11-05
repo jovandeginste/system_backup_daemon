@@ -37,6 +37,7 @@ class Machine
 		self.connect ||= "localhost".arrayfy
 		self.meta_directory ||= @@daemon.meta_directory
 		self.log_file ||= File.join(self.meta_directory, "#{self}.log")
+
 		self.log self.show_config
 	end
 
@@ -219,7 +220,7 @@ result
 	end
 
 	def locked?
-		File.exists?(self.lock_file) and File.mtime(self.lock_file) > Time.now - 6.hours
+		File.exists?(self.lock_file) and File.mtime(self.lock_file) > Time.now - 2.hours
 	end
 
 	def unlock
@@ -235,6 +236,8 @@ result
 		return false unless self.sane?
 		return false if self.locked?
 		self.lock
+
+		self.log self.show_config
 		t1 = Time.now
 
 		FileUtils.rmtree self.backup_staging_directory if File.directory? self.backup_staging_directory 
