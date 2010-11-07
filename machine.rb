@@ -259,7 +259,7 @@ result
 				  "\"#{self.includes.collect{|inc| "#{connect_host}::#{inc}"}.join('" "')}\""
 			  end
 
-		rsync_command = "echo '#{self.excludes.join("\n")}' | /usr/bin/rsync -zt --delete --delete-excluded -RHhax #{fromdir} #{self.backup_current_directory} --itemize-changes --exclude-from=- 2>&1"
+		rsync_command = "echo '#{self.excludes.join("\n")}' | /usr/bin/rsync -zt --delete --delete-excluded -RHha #{fromdir} #{self.backup_current_directory} --itemize-changes --exclude-from=- 2>&1"
 		self.log ">> #{rsync_command}"
 
 		status = POpen4::popen4( rsync_command ) do |stdout, stderr, stdin|
