@@ -18,7 +18,7 @@ $:.unshift(File.join(ENV['HOME'], 'ruby'))
 require "fileutils.rb"
 require "net/smtp.rb"
 
-["machine.rb" , "cycle.rb" , "fileset.rb" , "float.rb" , "fixnum.rb" , "object.rb" , "daemon.rb" , "telnet_server.rb"].each {|file|
+["machine.rb" , "cycle.rb" , "fileset.rb" , "float.rb" , "fixnum.rb" , "object.rb" , "daemon.rb" ].each {|file|
 	load File.join(File.dirname(__FILE__), file)
 }
 
@@ -67,8 +67,5 @@ Machine.all.each{|machine|
 		@@daemon.cycle
 	end
 }
-
-@@server_thread ||= TelnetServer.new(2021)
-@@server_thread.start if @@server_thread.stopped?
 
 @@cycle_thread.join
