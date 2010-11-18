@@ -14,7 +14,7 @@ STDIN.reopen '/dev/null'
 STDOUT.reopen '/dev/null', 'a'
 STDERR.reopen STDOUT
 
-$:.unshift(File.join(ENV['HOME'], 'ruby'))
+#$:.unshift(File.join(ENV['HOME'], 'ruby'))
 require "fileutils.rb"
 require "net/smtp.rb"
 
