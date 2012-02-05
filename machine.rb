@@ -4,7 +4,7 @@ require "popen4"
 class Machine
 	@@pool ||= {}
 
-	attr_accessor :name, :contact, :connect, :mode, :fileset, :cycle, :base_directory, :current_subdir, :staging_subdir, :prune_after, :meta_directory, :log_file
+	attr_accessor :name, :contact, :connect, :mode, :fileset, :cycle, :base_directory, :current_subdir, :staging_subdir, :prune_after, :meta_directory, :log_file, :rsync_path
 
 	def self.new(name, params = {})
 		f = self.find(name.to_sym)
@@ -42,7 +42,7 @@ class Machine
 	end
 
 	def parse_params(params)
-		[:mode, :cycle, :base_directory, :current_subdir, :staging_subdir, :prune_after, :meta_directory, :log_file].each{|key|
+		[:mode, :cycle, :base_directory, :current_subdir, :staging_subdir, :prune_after, :meta_directory, :log_file, :rsync_path].each{|key|
 			self.send "#{key}=", params[key]
 		}
 		[:contact, :fileset].each{|key|
