@@ -199,7 +199,7 @@ result
 	end
 
 	def ping(host)
-		`ping -c 1 -W 1 #{host}`
+		`ping -c 2 -W 2 #{host}`
 		$?.exitstatus == 0
 	end
 
