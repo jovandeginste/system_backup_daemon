@@ -367,6 +367,10 @@ result
 		FileUtils.touch(self.meta_file)
 	end
 
+	def delete_mail_file
+		FileUtils.rm_rf self.mail_file
+	end
+
 	def touch_mail_file
 		FileUtils.touch(self.mail_file)
 	end
@@ -427,9 +431,36 @@ result
 				r = self.perform_backup(host)
 
 				self.log r ? "Backup succeeded." : "Backup failed."
+				self.send_mail_ok if r
 				return r
 			end
 		end
+	end
+
+	def send_mail_ok
+		return false if self.last_mail.nil?
+		@@daemon.log "Backup for #{self} ok."
+		self.contacts.each{|contact|
+			msg = <<EOF_MESSAGE
+Dear #{contact},
+
+This mail is to inform you that #{self} has finally received a fresh backup!
+Its last successful backup finished around: #{self.last_backup}
+
+The configuration for this machine:
+
+#{self.show_config}
+
+Sincerely,
+
+#{@@daemon.mail_from}
+EOF_MESSAGE
+begin
+	send_email @@daemon.mail_from, contact, "Backup received for: #{self}", msg
+end
+		}
+		self.delete_mail_file
+		return true
 	end
 
 	def send_mail
