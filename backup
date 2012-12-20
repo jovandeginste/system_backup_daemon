@@ -1,5 +1,11 @@
 #!/usr/bin/ruby
 
+#####################################################
+##
+## Author: Jo Vandeginste
+##
+#####################################################
+
 raise 'Must run as root' if Process.euid != 0
 
 raise 'First fork failed' if (pid = fork) == -1
