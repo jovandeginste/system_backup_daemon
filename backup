@@ -7,6 +7,12 @@
 ## This project enables you to make intelligent backups
 ## of your systems.
 ##
+## Some features are obvious, but it supports:
+##  * configurable cycles
+##  * multiple ips per system
+##  * snapshots (+ cleanup)
+##  * notification mails
+##
 #########################################################
 
 raise 'Must run as root' if Process.euid != 0
