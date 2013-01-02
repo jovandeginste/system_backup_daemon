@@ -29,10 +29,13 @@ The clients are basically platform independent - as long as they support rsync. 
 # Getting started
 ## The server
 
+### Prepare the directories
 * put all the code in a single directory, eg. ```/usr/local/backup```
-* write your configuration (examples in ./config)
+* write your configuration (examples in ./config), either
+ * in ```/etc/backup```
+ * in ```/usr/local/backup/config```
 * start the daemon:
- * ```./backup -n -D``` will dump the config
+ * ```./backup -n -D``` will dump the config - check for errors!
  * ```./backup``` will just run it (and try to perform backups!)
 
 ### Make this daemon start automatically
