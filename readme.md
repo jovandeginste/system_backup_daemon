@@ -2,8 +2,8 @@
 Author: Jo Vandeginste
 
 This project enables you to make easy backups of your different systems.
-The clients are basically platform independent. I use this script to back up:
-* backup server (Ubuntu Desktop)
+The clients are basically platform independent - as long as they support rsync. I use this script to make backups of the following systems:
+* backup server itself (Ubuntu Desktop)
 * mediacenter PC (Ubuntu Desktop)
 * remote web server (Ubuntu Server)
 * OpenELEC.tv installation (OpenELEC.tv)
@@ -12,14 +12,14 @@ The clients are basically platform independent. I use this script to back up:
 * HTC Wildfire (Android 2.2)
 
 ## Features:
-* configurable cycles
-* multiple ips per host
-* snapshots (+ auto-cleanup)
+* templates for backup cycles and filesets
+* multiple ips per host, each with its own cycle
+* incremental snapshots (+ auto-cleanup)
 * notification mails
 
 ## Todo
 * improve documentation :-)
-* configuration tests
+* implement configuration tests
 * support non-root user
 * extra parameters
  * base configuration directory
