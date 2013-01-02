@@ -33,7 +33,7 @@ class Fileset
 
 	def parse_params(params)
 		[:includes, :excludes].each{|key|
-			self.send "#{key}=", params[key].arrayfy
+			self.send "#{key}=", (params[key] || params[key.to_s]).arrayfy
 		}
 	end
 

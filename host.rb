@@ -1,7 +1,7 @@
 require "rubygems"
 require "popen4"
 
-class Machine
+class Host
 	@@pool ||= {}
 
 	attr_accessor :name, :contact, :connect, :mode, :fileset, :cycle, :base_directory, :current_subdir, :staging_subdir, :prune_after, :meta_directory, :log_file, :rsync_path
@@ -32,9 +32,6 @@ class Machine
 		self.name = name
 		self.parse_params(params)
 
-		self.mode ||= "ssh"
-		self.contact ||= "root@localhost".arrayfy
-		self.connect ||= "localhost".arrayfy
 		self.meta_directory ||= @@daemon.meta_directory
 		self.log_file ||= File.join(self.meta_directory, "#{self}.log")
 
@@ -43,12 +40,12 @@ class Machine
 
 	def parse_params(params)
 		[:mode, :cycle, :base_directory, :current_subdir, :staging_subdir, :prune_after, :meta_directory, :log_file, :rsync_path].each{|key|
-			self.send "#{key}=", params[key]
+			self.send "#{key}=", (params[key] || params[key.to_s])
 		}
 		[:contact, :fileset].each{|key|
-			self.send "#{key}=", params[key].arrayfy
+			self.send "#{key}=", (params[key] || params[key.to_s]).arrayfy
 		}
-		connect = params[:connect]
+		connect = params["connect"]
 		self.connect ||= {}
 		case connect.class.to_s
 		when "String"
@@ -209,11 +206,11 @@ result
 
 	def sane?
 		unless File.directory?(self.backup_root_directory)
-			self.log "Machine directory #{self.backup_root_directory} does not exist; please correct!"
+			self.log "Host directory #{self.backup_root_directory} does not exist; please correct!"
 			return false
 		end
 		unless File.writable?(self.backup_root_directory)
-			self.log "Machine directory #{self.backup_root_directory} not writable; please correct!"
+			self.log "Host directory #{self.backup_root_directory} not writable; please correct!"
 			return false
 		end
 		return true
@@ -447,7 +444,7 @@ Dear #{contact},
 This mail is to inform you that #{self} has finally received a fresh backup!
 Its last successful backup finished around: #{self.last_backup}
 
-The configuration for this machine:
+The configuration for this host:
 
 #{self.show_config}
 
@@ -473,7 +470,7 @@ Dear #{contact},
 This mail is to inform you that #{self} is in desperate need for a fresh backup!
 Its last successful backup finished around: #{self.last_backup}
 
-The configuration for this machine:
+The configuration for this host:
 
 #{self.show_config}
 

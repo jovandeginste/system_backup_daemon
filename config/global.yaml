@@ -1,13 +1,16 @@
 --- 
-:log_file: /data/Backups/meta/daemon.log
-:mail_from: Your backup service <backups@localhost>
-:time_between_cycles: 900
-:meta_directory: /data/Backups/meta
-:max_backup_threads: 2
-:machine_defaults: 
-  :base_directory: /data/Backups
-  :rsync_path: /usr/bin/rsync
-  :cycle: :Daily
-  :current_subdir: current
-  :staging_subdir: .staging
-  :prune_after: 1296000
+log_file: /data/Backups/meta/daemon.log
+mail_from: Your backup service <backups@localhost>
+time_between_cycles: 900
+meta_directory: /data/Backups/meta
+max_backup_threads: 2
+host_defaults: 
+  base_directory: /data/Backups
+  rsync_path: /usr/bin/rsync
+  cycle: Daily
+  current_subdir: current
+  staging_subdir: .staging
+  prune_after: 1296000
+cycles: cycles.yaml
+filesets: filesets.yaml
+hosts: hosts.yaml

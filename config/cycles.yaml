@@ -1,25 +1,25 @@
 --- 
-:Monthly: 
-  :check: 30
-  :max_age: 50
-  :min_age: 6.97
-:Weekly: 
-  :check: 30
-  :max_age: 10
-  :min_age: 6.97
-:Laptop: 
-  :check: 30
-  :max_age: 21
-  :min_age: 0.97
-:HalfDaily: 
-  :check: 30
-  :max_age: 2
-  :min_age: 0.48
-:Daily: 
-  :check: 30
-  :max_age: 3
-  :min_age: 0.97
-:TripleDaily: 
-  :check: 30
-  :max_age: 7
-  :min_age: 2.97
+Monthly: 
+  check: 30
+  max_age: 50
+  min_age: 6.97
+Weekly: 
+  check: 30
+  max_age: 10
+  min_age: 6.97
+Laptop: 
+  check: 30
+  max_age: 21
+  min_age: 0.97
+HalfDaily: 
+  check: 30
+  max_age: 2
+  min_age: 0.48
+Daily: 
+  check: 30
+  max_age: 3
+  min_age: 0.97
+TripleDaily: 
+  check: 30
+  max_age: 7
+  min_age: 2.97

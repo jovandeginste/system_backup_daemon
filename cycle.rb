@@ -33,7 +33,7 @@ class Cycle
 
 	def parse_params(params)
 		[:max_age, :min_age, :check].each{|key|
-			self.send "#{key}=", params[key]
+			self.send "#{key}=", (params[key] || params[key.to_s])
 		}
 	end
 

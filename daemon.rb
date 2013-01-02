@@ -3,7 +3,7 @@ class Daemon
 	@@pool ||= {}
 	@@backup_threads ||= []
 
-	attr_accessor :name, :meta_directory, :time_between_cycles, :machine_defaults, :mail_from, :log_file, :max_backup_threads
+	attr_accessor :name, :meta_directory, :time_between_cycles, :host_defaults, :mail_from, :log_file, :max_backup_threads
 
 	def self.new(name, params = {})
 		f = self.find(name)
@@ -33,8 +33,8 @@ class Daemon
 	end
 
 	def parse_params(params)
-		[:meta_directory, :time_between_cycles, :machine_defaults, :mail_from, :log_file, :max_backup_threads].each{|key|
-			self.send "#{key}=", params[key]
+		[:meta_directory, :time_between_cycles, :host_defaults, :mail_from, :log_file, :max_backup_threads].each{|key|
+			self.send "#{key}=", (params[key] || params[key.to_s])
 		}
 	end
 
@@ -64,16 +64,16 @@ class Daemon
 	end
 
 	def backup_cycle
-		Machine.all.each{|machine|
-			self.log "Checking: #{machine}"
+		Host.all.each{|host|
+			self.log "Checking: #{host}"
 			@@backup_threads.delete_if {|t| t.status.nil? or ! t.status}
 			while @@backup_threads.size >= self.max_backup_threads
 				sleep 1
 				@@backup_threads.delete_if {|t| t.status.nil? or ! t.status}
 			end
 			@@backup_threads << Thread.new {
-				machine.check_snapshots
-				machine.check_to_backup
+				host.check_snapshots
+				host.check_to_backup
 			}
 			sleep 1
 			self.log "Done."
@@ -87,9 +87,9 @@ class Daemon
 
 	def check_timeout
 		expired = []
-		Machine.all.each{|machine|
-			if machine.backup_expired?
-				machine.send_mail
+		Host.all.each{|host|
+			if host.backup_expired?
+				host.send_mail
 			end
 		}
 		expired
