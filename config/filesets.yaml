@@ -1,0 +1,61 @@
+--- 
+:leen_laptop: 
+  :excludes: 
+  - c/Users/leen/AppData/Local/Temp
+  :includes: 
+  - root/c/Users
+  - root/d/Leen
+:linux: 
+  :excludes: 
+  - /proc
+  - /dev
+  - /sys
+  - /tmp
+  - /media
+  - /mnt
+  - /home/*/.gvfs
+  - /home/*/tmp
+  - /var/lib/mysql
+  - /swap.swp
+  - /usr/doc
+  - /usr/local/mysql
+  - /data
+  - /andere
+  - /Windows
+  - /tftpboot
+  - /storage/Media
+  - /storage/pictures
+  - /storage/andere
+  - /var/media
+  - /pictures
+  :includes: 
+  - /
+:spinnetje: 
+  :excludes: 
+  - d/Users/jo/AppData/Local/Temp
+  :includes: 
+  - root/d/Users
+  - root/f
+:android: 
+  :excludes: 
+  - /acct
+  - /proc
+  - /dev
+  - /sys
+  - /tmp
+  - /mnt
+  - /Removable
+  :includes: 
+  - /
+:android2: 
+  :excludes: 
+  - /acct
+  - /proc
+  - /dev
+  - /sys
+  - /tmp
+  - /mnt
+  - /Removable
+  :includes: 
+  - /
+  - /mnt/sdcard

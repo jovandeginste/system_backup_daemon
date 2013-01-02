@@ -15,29 +15,33 @@
 ##
 #########################################################
 
-raise 'Must run as root' if Process.euid != 0
+#raise 'Must run as root' if Process.euid != 0
 
-raise 'First fork failed' if (pid = fork) == -1
-exit unless pid.nil?
+#raise 'First fork failed' if (pid = fork) == -1
+#exit unless pid.nil?
+#
+#Process.setsid
+#raise 'Second fork failed' if (pid = fork) == -1
+#exit unless pid.nil?
+#puts "Daemon pid: #{Process.pid}" # Or save it somewhere, etc.
 
-Process.setsid
-raise 'Second fork failed' if (pid = fork) == -1
-exit unless pid.nil?
-puts "Daemon pid: #{Process.pid}" # Or save it somewhere, etc.
-
-STDIN.reopen '/dev/null'
-STDOUT.reopen '/dev/null', 'a'
-STDERR.reopen STDOUT
+#STDIN.reopen '/dev/null'
+#STDOUT.reopen '/dev/null', 'a'
+#STDERR.reopen STDOUT
 
 #$:.unshift(File.join(ENV['HOME'], 'ruby'))
-require "fileutils.rb"
-require "net/smtp.rb"
+require "fileutils"
+require "net/smtp"
+require "yaml"
 
 ["machine.rb" , "cycle.rb" , "fileset.rb" , "float.rb" , "fixnum.rb" , "object.rb" , "daemon.rb" ].each {|file|
 	load File.join(File.dirname(__FILE__), file)
 }
 
-load "/etc/backup.conf"
+@@system = YAML.load(File.read('config/global.yaml'))
+@@filesets = YAML.load(File.read('config/filesets.yaml'))
+@@cycles = YAML.load(File.read('config/cycles.yaml'))
+@@machines = YAML.load(File.read('config/hosts.yaml'))
 
 def parse_config
 	@@daemon = Daemon.new("daemon", @@system)
@@ -76,7 +80,7 @@ reload
 Machine.all.each{|machine|
 	@@daemon.log machine.show_config
 }
-
+exit
 @@cycle_thread ||= Thread.new {
 	while true
 		@@daemon.cycle

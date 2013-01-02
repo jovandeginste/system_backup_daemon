@@ -1,0 +1,53 @@
+--- 
+:transformer: 
+  :rsync_path: /system/xbin/rsync
+  :contact: jo.vandeginste@gmail.com
+  :cycle: :TripleDaily
+  :connect: transformer
+  :prune_after: 5184000
+  :mode: :linux
+  :fileset: :android
+:leen_laptop: 
+  :contact: jo.vandeginste@gmail.com
+  :cycle: :Laptop
+  :connect: 
+    leen-laptop: {}
+
+    leen-laptop-wifi: 
+      :cycle: :TripleDaily
+  :mode: :windows
+  :fileset: :leen_laptop
+:wildfire: 
+  :rsync_path: /system/xbin/rsync
+  :contact: jo.vandeginste@gmail.com
+  :cycle: :TripleDaily
+  :connect: wildfire
+  :prune_after: 5184000
+  :mode: :linux
+  :fileset: :android2
+:dwarfy: 
+  :contact: jo.vandeginste@gmail.com
+  :cycle: :Daily
+  :connect: dwarfy.be
+  :mode: :linux
+  :fileset: :linux
+:spid3r_linux: 
+  :contact: jo.vandeginste@gmail.com
+  :cycle: :Daily
+  :connect: localhost
+  :mode: :local
+  :fileset: :linux
+:openelec: 
+  :rsync_path: /storage/bin/rsync
+  :contact: jo.vandeginste@gmail.com
+  :cycle: :TripleDaily
+  :connect: openelec
+  :prune_after: 5184000
+  :mode: :linux
+  :fileset: :linux
+:mediacenter: 
+  :contact: jo.vandeginste@gmail.com
+  :cycle: :Monthly
+  :connect: mediacenter
+  :mode: :linux
+  :fileset: :linux
