@@ -29,13 +29,19 @@ This project enables you to make easy backups of your different systems.
 (as root)
 
 Copy the upstart config file:
-	cp backup.init.conf /etc/init/backup.conf
+```bash
+cp backup.init.conf /etc/init/backup.conf
+```
 
 Make a symlink for the init.d script:
-	ln -s /lib/init/upstart-job /etc/init.d/backup
+```bash
+ln -s /lib/init/upstart-job /etc/init.d/backup
+```
 
 Let the system make the necessary symlinks:
-	update-rc.d backup defaults
+```bash
+update-rc.d backup defaults
+```
 
 # License
 Distributed under Apache License, Version 2.0
