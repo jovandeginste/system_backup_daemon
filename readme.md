@@ -35,9 +35,9 @@ The clients are basically platform independent - as long as they support rsync. 
  * ```./backup -n -D``` will dump the config
  * ```./backup``` will just run it (and try to perform backups!)
 
-## Make this daemon start automatically
+### Make this daemon start automatically
 
-### Ubuntu
+#### Ubuntu
 
 (as root)
 
