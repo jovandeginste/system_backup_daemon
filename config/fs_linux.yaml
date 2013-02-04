@@ -8,6 +8,7 @@
 - /mnt
 - /home/*/.gvfs
 - /home/*/.ccache*
+- /home/*/.cache*
 - /home/*/tmp
 - /var/lib/mysql
 - /swap.swp
