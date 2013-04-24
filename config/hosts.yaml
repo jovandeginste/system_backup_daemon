@@ -17,14 +17,6 @@ leen_laptop:
       cycle: TripleDaily
   mode: windows
   fileset: leen_laptop
-wildfire: 
-  rsync_path: /system/xbin/rsync
-  contact: jo.vandeginste@gmail.com
-  cycle: TripleDaily
-  connect: wildfire
-  prune_after: 5184000
-  mode: linux
-  fileset: android2
 dwarfy: 
   contact: jo.vandeginste@gmail.com
   cycle: Daily
