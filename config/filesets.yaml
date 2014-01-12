@@ -14,8 +14,8 @@ android:
   - /sys
   - /tmp
   - /mnt
-  - /Removable
   - /storage
+  - /Removable
   includes: 
   - /
 android2: 
