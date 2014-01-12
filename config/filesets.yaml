@@ -15,6 +15,7 @@ android:
   - /tmp
   - /mnt
   - /Removable
+  - /storage
   includes: 
   - /
 android2: 
