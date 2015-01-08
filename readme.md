@@ -82,7 +82,9 @@ my_linux_host:
 ```
 This implies a fileset with the name ```fs_linux```. A fairly extensive example:
 
-```fs_linux.yaml```
+```
+fs_linux.yaml
+```
 
 ```yaml
 ---
@@ -127,7 +129,9 @@ my_windows_host:
 
 This implies a fileset with the name ```fs_docs_and_user_dirs```, eg.:
 
-```fs_docs_and_user_dirs.yaml```
+```
+fs_docs_and_user_dirs.yaml
+```
 
 ```yaml
 ---
@@ -158,7 +162,9 @@ transformer:
 ```
 
 Again, a fileset "fs_android" is implied:
-```fs_android.yaml```
+```
+fs_android.yaml
+```
 
 ```yaml
 excludes:
