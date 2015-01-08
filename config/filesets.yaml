@@ -16,6 +16,7 @@ android:
   - /mnt
   - /storage
   - /Removable
+  - \*/cache/
   includes: 
   - /
 android2: 

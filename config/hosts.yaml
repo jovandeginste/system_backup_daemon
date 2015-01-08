@@ -20,7 +20,7 @@ leen_laptop:
 dwarfy: 
   contact: jo.vandeginste@gmail.com
   cycle: Daily
-  connect: dwarfy.be
+  connect: old.dwarfy.be
   mode: linux
   fileset: linux
 spid3r_linux: spid3r_linux.yaml 
@@ -36,5 +36,17 @@ mediacenter:
   contact: jo.vandeginste@gmail.com
   cycle: Monthly
   connect: mediacenter
+  mode: linux
+  fileset: linux
+new_dwarfy: 
+  contact: jo.vandeginste@gmail.com
+  cycle: Daily
+  connect: new.dwarfy.be
+  mode: linux
+  fileset: linux
+pi1: 
+  contact: jo.vandeginste@gmail.com
+  cycle: Daily
+  connect: pi1
   mode: linux
   fileset: linux

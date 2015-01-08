@@ -24,5 +24,11 @@
 - /var/media
 - /pictures
 - /virtual
+- /run
+- /var/run
+- /var/cache
+- /var/lib/docker
+- /docker
+- /*.disk
 :includes: 
 - /
