@@ -14,24 +14,23 @@ require "fileutils"
 require "net/smtp"
 require "yaml"
 require "slop"
-require 'active_support' # deep_merge
+require 'hash_deep_merge'
 
 ["host" , "cycle" , "fileset" , "float" , "fixnum" , "object" , "daemon" ].each {|my_module|
 	require my_module
 }
 
-opts = Slop.parse do
-	banner "#{__FILE__} [options]\n"
-	on :n, :dryrun, 'perform a dryrun'
-	on :D, "no-daemonize", "don't daemonize"
-	on :h, :help, "show this message"
+opts = Slop.parse do |o|
+	o.banner = "#{__FILE__} [options]\n"
+	o.bool '-n', '--dryrun', 'perform a dryrun'
+	o.bool '-D', '--no-daemonize', "don't daemonize"
+	o.bool '-h', '--help', "show this message"
 end
 
 if opts[:help]
-	puts opts.help
+	puts opts
 	exit
 end
-
 
 if opts["no-daemonize"]
 	puts "Not daemonizing"
@@ -64,7 +63,7 @@ def find_subconfig(name, global_config)
 end
 
 def read_config_from_file(filename)
-	file = ["/etc/backup", "#{MYROOT}/config", "#{MYROOT}", ""].map{|path| "#{path}/#{filename}"}.select{|file| File.exist?(file)}.first
+	file = ["/etc/backup", "#{MYROOT}/config", "#{MYROOT}", ""].map{|path| "#{path}/#{filename}"}.select{|f| File.exist?(f)}.first
 	if file
 		expand_config(YAML.load(File.read(file)))
 	else

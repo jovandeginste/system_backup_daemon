@@ -1,0 +1,11 @@
+[Unit]
+Description=Home Network Backup Service
+After=local-fs.target network-online.target
+
+[Service]
+Restart=on-failure
+TimeoutStartSec=3
+ExecStart=/usr/local/backup/backup -D
+
+[Install]
+WantedBy=multi-user.target
