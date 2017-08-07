@@ -1,5 +1,6 @@
 require "rubygems"
 require "popen4"
+require "open3"
 
 class Host
 	@@pool ||= {}
@@ -188,11 +189,11 @@ result
 	end
 
 	def live_hosts
-		hosts = self.connect_hosts.select{|host| self.ping(host)}
+		self.connect_hosts.select{|host| self.ping(host)}
 	end
 
 	def live_due_hosts
-		hosts = self.due_hosts.select{|host| self.ping(host)}
+		self.due_hosts.select{|host| self.ping(host)}
 	end
 
 	def ping(host)
@@ -237,7 +238,7 @@ result
 		self.log self.show_config
 		t1 = Time.now
 
-		FileUtils.rmtree self.backup_staging_directory if File.directory? self.backup_staging_directory 
+		FileUtils.rmtree self.backup_staging_directory if File.directory? self.backup_staging_directory
 
 		date_subdir = Time.now.localtime.strftime("%Y-%m-%d_%H-%M-%S")
 		date_dir = File.join(self.backup_root_directory, date_subdir)
@@ -277,7 +278,7 @@ result
 			#   1      Syntax or usage error
 			#   2      Protocol incompatibility
 			#   3      Errors selecting input/output files, dirs
-			#   4      Requested  action not supported: an attempt was made to manipulate 64-bit files on a platform 
+			#   4      Requested  action not supported: an attempt was made to manipulate 64-bit files on a platform
 			#          that cannot support them; or an option was specified that is supported by the client and not by the server.
 			#   5      Error starting client-server protocol
 			#   6      Daemon unable to append to log-file
@@ -296,43 +297,51 @@ result
 			#   35     Timeout waiting for daemon connection
 
 		when 0, 23, 24
-			snapshot_command = "find #{self.backup_current_directory} -depth -print0 | cpio -pdm0 --link #{self.backup_staging_directory}"
+			root_dir = syscall("stat", "--format", "%m", self.backup_current_directory)
+			ft = syscall("stat", "--file-system", "--format", "%T", self.backup_current_directory)
+			self.log "Directory '#{self.backup_current_directory}' is on '#{root_dir}', type '#{ft}'"
+			if ft == "btrfs" and root_dir == self.backup_current_directory
+				self.log syscall("btrfs", "subvolume", "snapshot", "-r", self.backup_current_directory, date_dir)
+				self.touch_meta_file
+			else
+				snapshot_command = "find #{self.backup_current_directory} -depth -print0 | cpio -pdm0 --link #{self.backup_staging_directory}"
 
-			self.log ">> #{snapshot_command}"
-			status = POpen4::popen4( snapshot_command ) do |stdout, stderr, stdin|
-				stdout.each do |line|
-					self.lock
-					self.log line
-				end
-			end
-			snapshot_exit_code = status.exitstatus
-			t3 = Time.now
-			self.log "Snapshot exit code: #{snapshot_exit_code}; this took: #{(t3 - t2).to_i.seconds} seconds"
-
-			if snapshot_exit_code == 0 and
-				rsync_command = "/usr/bin/rsync -vHhax #{self.backup_current_directory}/ #{File.join(self.backup_staging_directory, self.backup_current_directory)} 2>&1"
-				self.log ">> #{rsync_command}"
-
-				status = POpen4::popen4( rsync_command ) do |stdout, stderr, stdin|
+				self.log ">> #{snapshot_command}"
+				status = POpen4::popen4( snapshot_command ) do |stdout, stderr, stdin|
 					stdout.each do |line|
 						self.lock
 						self.log line
 					end
 				end
-				exit_code = status.exitstatus
-				self.lock
+				snapshot_exit_code = status.exitstatus
+				t3 = Time.now
+				self.log "Snapshot exit code: #{snapshot_exit_code}; this took: #{(t3 - t2).to_i.seconds} seconds"
 
-				t4 = Time.now
-				self.log "Resync exit code: #{exit_code}; this took: #{(t4 - t3).to_i.seconds} seconds"
+				if snapshot_exit_code == 0
+					rsync_command = "/usr/bin/rsync -vHhax #{self.backup_current_directory}/ #{File.join(self.backup_staging_directory, self.backup_current_directory)} 2>&1"
+					self.log ">> #{rsync_command}"
 
-				FileUtils.move File.join(self.backup_staging_directory, self.backup_current_directory), date_dir and
-				FileUtils.rmtree self.backup_staging_directory
-				t5 = Time.now
-				self.log "Total backup took: #{(t5 - t1).to_i.seconds} seconds"
-				self.touch_meta_file
-			else
-				self.unlock
-				return false
+					status = POpen4::popen4( rsync_command ) do |stdout, stderr, stdin|
+						stdout.each do |line|
+							self.lock
+							self.log line
+						end
+					end
+					exit_code = status.exitstatus
+					self.lock
+
+					t4 = Time.now
+					self.log "Resync exit code: #{exit_code}; this took: #{(t4 - t3).to_i.seconds} seconds"
+
+					FileUtils.move File.join(self.backup_staging_directory, self.backup_current_directory), date_dir and
+						FileUtils.rmtree self.backup_staging_directory
+					t5 = Time.now
+					self.log "Total backup took: #{(t5 - t1).to_i.seconds} seconds"
+					self.touch_meta_file
+				else
+					self.unlock
+					return false
+				end
 			end
 		else
 			self.log "Rsync failed..."
@@ -349,10 +358,17 @@ result
 		snapshots = Dir.new(self.backup_root_directory).entries.select{|e| e.match('^\d{4}(-\d{2}){2}_\d{2}(-\d{2}){2}$')}
 		pruned = 0
 		snapshots.each{|s|
-			time = File.mtime(File.join(self.backup_root_directory, s))
+			sdir = File.join(self.backup_root_directory, s)
+			time = File.mtime(sdir)
 			if time < Time.now - self.prune_after
 				self.log "Snapshot #{s} is too old - removing.."
-				self.log FileUtils.rmtree File.join(self.backup_root_directory, s)
+				root_dir = syscall("stat", "--format", "%m", sdir)
+				ft = syscall("stat", "--file-system", "--format", "%T", sdir)
+				if ft == "btrfs" and root_dir == sdir
+					self.log syscall("btrfs", "subvolume", "delete", "-c", sdir)
+				else
+					self.log FileUtils.rmtree sdir
+				end
 				pruned += 1
 			end
 		}
@@ -384,7 +400,7 @@ result
 		puts log_line
 		if self.log_file.not_blank?
 			if (File.file?(self.log_file) and File.writable?(self.log_file)) or
-				(! File.exists?(self.log_file) and File.writable?(File.dirname self.log_file))
+					(! File.exists?(self.log_file) and File.writable?(File.dirname self.log_file))
 				File.open(self.log_file, 'a') {|f| f.write log_line }
 			end
 		else
@@ -446,15 +462,15 @@ Its last successful backup finished around: #{self.last_backup}
 
 The configuration for this host:
 
-#{self.show_config}
+			#{self.show_config}
 
 Sincerely,
 
-#{@@daemon.mail_from}
+			#{@@daemon.mail_from}
 EOF_MESSAGE
-begin
-	send_email @@daemon.mail_from, contact, "Backup received for: #{self}", msg
-end
+			begin
+				send_email @@daemon.mail_from, contact, "Backup received for: #{self}", msg
+			end
 		}
 		self.delete_mail_file
 		return true
@@ -472,15 +488,15 @@ Its last successful backup finished around: #{self.last_backup}
 
 The configuration for this host:
 
-#{self.show_config}
+			#{self.show_config}
 
 Sincerely,
 
-#{@@daemon.mail_from}
+			#{@@daemon.mail_from}
 EOF_MESSAGE
-begin
-	send_email @@daemon.mail_from, contact, "Backup overdue for: #{self}", msg
-end
+			begin
+				send_email @@daemon.mail_from, contact, "Backup overdue for: #{self}", msg
+			end
 		}
 		self.touch_mail_file
 		return true
@@ -498,6 +514,16 @@ end
 			end
 		rescue
 			self.log "Cannot send mail ... something went wrong!"
+		end
+	end
+
+	def syscall(*cmd)
+		begin
+			io = IO.popen(cmd)
+			stdout = io.readlines.join.strip
+			io.close
+			return stdout.strip
+		rescue
 		end
 	end
 end
